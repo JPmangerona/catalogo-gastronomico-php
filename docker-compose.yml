@@ -8,7 +8,6 @@ services:
       - '8080:80'
     volumes:
       - .:/var/www/html
-    command: bash -c "composer install --no-interaction && apache2-foreground"
     environment:
       DB_HOST: db
       DB_NAME: catalogo_gastronomico

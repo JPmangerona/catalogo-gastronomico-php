@@ -1,6 +1,6 @@
 # Catálogo Gastronômico
 
-Este projeto é um Desafio Tecnico proposto pelo grupo BTZ fiz um catalogo menu para demonstrar os produtos de uma doceria, acabei evoluindo a aplicação para ser um site de demonstração dos produtos do meu tio.
+Monolito feito em PHP, fiz um catalogo menu para demonstrar os produtos de uma doceria, o diferencial que nela você tem um painel Admin para atualizar as fotos e preços de produtos.
 
 Na página inicial você pode já ver os produtos cadastrados.
 

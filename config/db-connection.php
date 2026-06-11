@@ -13,22 +13,41 @@ try {
     // Configura o PDO para lançar exceções em caso de erro
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Seed automático do usuário administrador caso a tabela exista e esteja vazia
+    // Inicialização automática do banco de dados caso a tabela usuarios não exista
     try {
         $checkTable = $pdo->query("SELECT 1 FROM usuarios LIMIT 1");
-        if ($checkTable !== false) {
-            $countStmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
-            if ($countStmt->fetchColumn() == 0) {
-                $adminEmail = getenv('ADMIN_EMAIL') ?: 'teste@teste.com';
-                $adminPassword = getenv('ADMIN_PASSWORD') ?: '123456';
-                $hash = password_hash($adminPassword, PASSWORD_ARGON2ID);
+    } catch (PDOException $e) {
+        $checkTable = false;
+    }
 
-                $insert = $pdo->prepare("INSERT INTO usuarios (email, senha) VALUES (?, ?)");
-                $insert->execute([$adminEmail, $hash]);
+    if ($checkTable === false) {
+        $sqlPath = __DIR__ . '/../docker/mysql/init.sql';
+        if (file_exists($sqlPath)) {
+            $sql = file_get_contents($sqlPath);
+            // Remove comandos de criação/uso de banco de dados para evitar problemas no Railway
+            $sql = preg_replace('/CREATE DATABASE[^;]+;/i', '', $sql);
+            $sql = preg_replace('/USE[^;]+;/i', '', $sql);
+            try {
+                $pdo->exec($sql);
+            } catch (PDOException $e) {
+                // Silencia erros temporários de execução
             }
         }
+    }
+
+    // Seed automático do usuário administrador caso a tabela esteja vazia
+    try {
+        $countStmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
+        if ($countStmt->fetchColumn() == 0) {
+            $adminEmail = getenv('ADMIN_EMAIL') ?: 'teste@teste.com';
+            $adminPassword = getenv('ADMIN_PASSWORD') ?: '123456';
+            $hash = password_hash($adminPassword, PASSWORD_ARGON2ID);
+
+            $insert = $pdo->prepare("INSERT INTO usuarios (email, senha) VALUES (?, ?)");
+            $insert->execute([$adminEmail, $hash]);
+        }
     } catch (PDOException $e) {
-        // Tabela usuarios ainda não existe ou não foi inicializada, ignora o seed
+        // Silencia erros caso a tabela ainda não esteja acessível
     }
 
 } catch (PDOException $e) {

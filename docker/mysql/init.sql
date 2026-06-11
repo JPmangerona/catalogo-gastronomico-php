@@ -18,9 +18,6 @@ CREATE TABLE IF NOT EXISTS produtos (
     preco DECIMAL(10,2) NOT NULL
 );
 
--- Inserindo um usuário de teste (senha: 123456)
-INSERT INTO usuarios (email, senha) VALUES ('teste@teste.com', '$argon2id$v=19$m=65536,t=4,p=1$Um5nWFBJcmdHbjdqY0tyTw$m0gQoN/agsbksYl90/oAyE5gfdtbxuobYpQva7wCEcA') ON DUPLICATE KEY UPDATE email=email;
-
 -- Inserindo os Salgados
 INSERT INTO `produtos` (`tipo`, `nome`, `descricao`, `imagem`, `preco`) VALUES 
 ('Salgado', 'Filet Mignon com Bacon', 'Medalhões suculentos envoltos em bacon, acompanhados de batatas rústicas douradas.', 'file_mignon.jpg', 65.90),

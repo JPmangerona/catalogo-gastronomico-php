@@ -2,11 +2,11 @@
 
 // No Docker, as variáveis de ambiente são definidas no docker-compose.yml
 // No ambiente local, ele usará os valores padrão definidos abaixo.
-$host = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: 'localhost';
-$port = getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: '3306';
-$dbname = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: 'catalogo_gastronomico';
-$user = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: 'root';
-$password = getenv('DB_PASSWORD') ?: getenv('MYSQLPASSWORD') ?: 'password';
+$host = trim(getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: 'localhost', "\"'");
+$port = trim(getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: '3306', "\"'");
+$dbname = trim(getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: 'catalogo_gastronomico', "\"'");
+$user = trim(getenv('DB_USER') ?: getenv('MYSQLUSER') ?: 'root', "\"'");
+$password = trim(getenv('DB_PASSWORD') ?: getenv('MYSQLPASSWORD') ?: 'password', "\"'");
 
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $password);
@@ -39,8 +39,8 @@ try {
     try {
         $countStmt = $pdo->query("SELECT COUNT(*) FROM usuarios");
         if ($countStmt->fetchColumn() == 0) {
-            $adminEmail = getenv('ADMIN_EMAIL') ?: 'teste@teste.com';
-            $adminPassword = getenv('ADMIN_PASSWORD') ?: '123456';
+            $adminEmail = trim(getenv('ADMIN_EMAIL') ?: 'teste@teste.com', "\"'");
+            $adminPassword = trim(getenv('ADMIN_PASSWORD') ?: '123456', "\"'");
             $hash = password_hash($adminPassword, PASSWORD_ARGON2ID);
 
             $insert = $pdo->prepare("INSERT INTO usuarios (email, senha) VALUES (?, ?)");
